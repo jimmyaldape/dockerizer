@@ -17,20 +17,20 @@ $ docker-machine --version
 docker-machine version 0.16.0, build 9ba6da9
 ```
 
-### Installing
+### To Start Developing
 
 To start developing on your machine perform the following steps
 
 First spin up docker and ssh into vm
 ```
-$ yarn on
-$ yarn it
+$ npm run on
+$ npm run it
 ```
 Then in ssh'd vm, run
 
 ```
+$ composer install
 $ npm install
-$ compose update
 ```
 
 ## Built With
