@@ -1,0 +1,25 @@
+{
+  "name": "laravel-docker-base",
+  "version": "0.0.1",
+  "description": "Configures a new laravel project with docker support for local development",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "rm -rf .git && cp -f /_templates/README.md README.md && cp /_templates/.env.example .env && laravel new src && cp /_templates/.gitignore.example /src/.gitignore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimmyaldape/laravel-docker-base.git"
+  },
+  "keywords": [
+    "laravel",
+    "docker",
+    "base"
+  ],
+  "author": "jimmy@jimmyaldape.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimmyaldape/laravel-docker-base/issues"
+  },
+  "homepage": "https://github.com/jimmyaldape/laravel-docker-base#readme"
+}
