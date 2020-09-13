@@ -16,18 +16,16 @@ const boxenOptions = {
 
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
 
-// TODO: delete .git folder
-const gitDir = '.git';
-fs.rmdir(gitDir, { recursive: true }, (err) => {
-    if(err) {
-        throw err;
+fs.rmdir('.git', { recursive: true }, (error) => {
+    if(error) {
+        throw error;
+    } else {
+        console.log(chalk.blue.bold(`.git is deleted!`));
     }
-
-    console.log(chalk.blue.bold(`${gitDir} is deleted!`));
 });
 
 // copy readme
-fs.copyFile('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) =>{
+fs.copyFile('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
     if(error){
         console.error(chalk.red.bold("Error copying README"));
         return;
