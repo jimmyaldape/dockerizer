@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rm -rf .git && cp -f _templates/README.md README.md && cp _templates/.env.example .env && laravel new src && cp _templates/.gitignore.example src/.gitignore"
+    "start": "node ."
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,9 @@
   "dependencies": {
     "boxen": "^4.2.0",
     "chalk": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=12.10.0",
+    "npm": ">=6.0.0"
   }
 }
