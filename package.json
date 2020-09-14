@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "node .",
+    "on": "docker-compose up -d",
+    "off": "docker-compose down",
+    "it": "docker exec -it php sh",
+    "rebuild": "docker-compose build"
   },
   "repository": {
     "type": "git",
