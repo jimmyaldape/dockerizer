@@ -9,6 +9,7 @@ A starting point for laravel development using docker
 
 To setup your new laravel project, run:
 ```
+$ npm install
 $ npm run start
 ```
 

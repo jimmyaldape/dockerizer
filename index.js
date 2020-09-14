@@ -15,15 +15,14 @@ const boxenOptions = {
 };
 
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
-
+// delete .git folder
 fs.rmdir('.git', { recursive: true }, (error) => {
     if(error) {
         throw error;
     } else {
-        console.log(chalk.blue.bold(`.git is deleted!`));
+        console.log(chalk.blue.bold(`.git folder deleted.`));
     }
 });
-
 // copy readme
 fs.copyFile('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
     if(error){
@@ -32,7 +31,6 @@ fs.copyFile('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (
     }
     console.log(chalk.blue.bold("Copied README.md from templates"));
 });
-
 // copy env
 fs.copyFile('_templates/.env.example','.env', fs.constants.COPYFILE_FICLONE, (error) =>{
     if(error){
@@ -41,10 +39,8 @@ fs.copyFile('_templates/.env.example','.env', fs.constants.COPYFILE_FICLONE, (er
     }
     console.log(chalk.blue.bold("Copied env file from templates"));
 });
-
 // scaffold new laravel application
 const laravel = spawn("laravel", ["new", "src"]);
-
 // once finished override the .gitignore file and announce completion
 laravel.on("close", code => {
 
@@ -55,5 +51,16 @@ laravel.on("close", code => {
         }
     });
 
-    console.log(boxen( chalk.white.bold("Laravel development environment complete"), boxenOptions ));
+    fs.rmdir('_templates', { recursive: true }, (error) => {
+        if(error) {
+            throw error;
+        } else {
+            console.log(chalk.blue.bold(`_templates folder deleted.`));
+        }
+    });
 });
+
+const git = spawn("git", ["init"]);
+git.on("close", code => {
+    console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
+})
