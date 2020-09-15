@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-const chalk = require("chalk");
-const boxen = require("boxen");
+
 const fs = require("fs");
 const { spawn } = require('child_process');
 const replace = require('replace-in-file');
+const chalk = require("chalk");
+const boxen = require("boxen");
 const boxenOptions = {
     padding: 1,
     margin: 1,
@@ -11,8 +12,37 @@ const boxenOptions = {
     borderColor: "blue",
     backgroundColor: "#555555"
 };
+const prompts = require('prompts');
+
 
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
+// prompt for env variables
+const questions = [
+    {
+        type: 'text',
+        name: 'project_name',
+        message: 'PROJECT_NAME'
+    },
+    {
+        type: 'text',
+        name: 'http_port',
+        message: 'HTTP_PORT (8000)'
+    },
+    {
+        type: 'text',
+        name: 'mysql_port',
+        message: 'MYSQL_PORT (3306)'
+    }
+];
+
+(async () => {
+    const response = await prompts(questions);
+
+    fs.writeFile('.env', response, function(err){
+        if (err) return console.log(err);
+    })
+})();
+
 // delete .git folder
 fs.rmdirSync('.git', { recursive: true }, (error) => {
     if(error) {
@@ -20,15 +50,6 @@ fs.rmdirSync('.git', { recursive: true }, (error) => {
     } else {
         console.log(chalk.blue.bold(`.git folder deleted.`));
     }
-});
-// copy env
-fs.copyFileSync('_templates/.env.example','.env', fs.constants.COPYFILE_FICLONE, (error) =>{
-    if(error){
-        console.error(chalk.red.bold("Error copying env file"));
-        return;
-    }
-    require('dotenv').config();
-    console.log(chalk.blue.bold("Copied env file from templates"));
 });
 // copy readme
 fs.copyFileSync('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
@@ -73,6 +94,8 @@ laravel.on("close", code => {
     git.on("close", code => {
         console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
     });
-});
 
+    // exit the process
+    process.exit(0);
+});
 
