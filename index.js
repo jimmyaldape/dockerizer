@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-require('dotenv').config();
 const chalk = require("chalk");
 const boxen = require("boxen");
 const fs = require("fs");
@@ -28,6 +27,7 @@ fs.copyFileSync('_templates/.env.example','.env', fs.constants.COPYFILE_FICLONE,
         console.error(chalk.red.bold("Error copying env file"));
         return;
     }
+    require('dotenv').config();
     console.log(chalk.blue.bold("Copied env file from templates"));
 });
 // copy readme
