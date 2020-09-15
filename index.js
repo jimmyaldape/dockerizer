@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+require('dotenv').config();
 const chalk = require("chalk");
 const boxen = require("boxen");
 const fs = require("fs");
@@ -58,17 +58,15 @@ laravel.on("close", code => {
         }
     });
 
-    const options = {
-        files: 'package.json',
-        from: '<PROJECT_NAME>',
-        to: process.env.PROJECT_NAME
-    }
-
     try {
-        let changedFile = replace.sync(options);
+        let changedFile = replace.sync({
+            files: 'package.json',
+            from: '<PROJECT_NAME>',
+            to: process.env.PROJECT_NAME
+        });
         console.log(chalk.blue.bold(`package.json updated.`));
     } catch (error) {
-        console.error(chalk.red.bold("Error updating package.json."));
+        console.error(chalk.red.bold("Error updating package.json. Please update docker:remote in scripts."));
     }
 
     const git = spawn("git", ["init"]);
