@@ -14,34 +14,7 @@ const boxenOptions = {
 };
 const prompts = require('prompts');
 
-
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
-// prompt for env variables
-const questions = [
-    {
-        type: 'text',
-        name: 'project_name',
-        message: 'PROJECT_NAME'
-    },
-    {
-        type: 'text',
-        name: 'http_port',
-        message: 'HTTP_PORT (8000)'
-    },
-    {
-        type: 'text',
-        name: 'mysql_port',
-        message: 'MYSQL_PORT (3306)'
-    }
-];
-
-(async () => {
-    const response = await prompts(questions);
-
-    fs.writeFile('.env', response, function(err){
-        if (err) return console.log(err);
-    })
-})();
 
 // delete .git folder
 fs.rmdirSync('.git', { recursive: true }, (error) => {
@@ -51,18 +24,19 @@ fs.rmdirSync('.git', { recursive: true }, (error) => {
         console.log(chalk.blue.bold(`.git folder deleted.`));
     }
 });
-// copy readme
-fs.copyFileSync('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
-    if(error){
-        console.error(chalk.red.bold("Error copying README"));
-        return;
-    }
-    console.log(chalk.blue.bold("Copied README.md from templates"));
-});
+
 // scaffold new laravel application
 const laravel = spawn("laravel", ["new", "src"]);
-// once finished override the .gitignore file and announce completion
+// once finished copy and clean diles
 laravel.on("close", code => {
+    // copy readme
+    fs.copyFileSync('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            console.error(chalk.red.bold("Error copying README"));
+            return;
+        }
+        console.log(chalk.blue.bold("Copied README.md from templates"));
+    });
 
     fs.copyFileSync('_templates/.gitignore.example','src/.gitignore', fs.constants.COPYFILE_FICLONE, (error) =>{
         if(error){
@@ -79,23 +53,89 @@ laravel.on("close", code => {
         }
     });
 
+});
+
+const git = spawn("git", ["init"]);
+git.on("close", code => {
+    // prompt for env variables
+    const questions = [
+        {
+            type: 'text',
+            name: 'project_name',
+            message: 'PROJECT_NAME'
+        },
+        {
+            type: 'number',
+            name: 'http_port',
+            message: 'HTTP_PORT',
+            initial: 8000
+        },
+        {
+            type: 'number',
+            name: 'mysql_port',
+            message: 'MYSQL_PORT',
+            initial: 3306
+        },
+        {
+            type: 'text',
+            name: 'mysql_database',
+            message: 'MYSQL_DATABASE',
+            initial: 'laraveldb'
+        },
+        {
+            type: 'text',
+            name: 'mysql_user',
+            message: 'MYSQL_USER',
+            initial: 'dbuser'
+        },
+        {
+            type: 'text',
+            name: 'mysql_password',
+            message: 'PROJECT_NAME',
+            initial: 'dbpassword'
+        },
+    ];
+
+    (async () => {
+        const response = await prompts(questions);
+        writeEnvToRoot(response);
+    })();
+
+    console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
+});
+
+
+
+function writeEnvToRoot(response){
+    // override env
+    fs.open('.env', 'w', function (err) {
+        if (err) throw err;
+    });
+
+    const keys = Object.keys(response);
+
+    keys.forEach((key, index) => {
+        fs.appendFile('.env', `${key.toUpperCase()}=${response[key]} \n`,(error)=>{
+            if(error){
+                throw error;
+            }
+        });
+    });
+
+    updatePackageJson(response);
+}
+
+function updatePackageJson(response){
     try {
         let changedFile = replace.sync({
             files: 'package.json',
             from: '<PROJECT_NAME>',
-            to: process.env.PROJECT_NAME
+            to: `${response['project_name']}_php`
         });
         console.log(chalk.blue.bold(`package.json updated.`));
     } catch (error) {
         console.error(chalk.red.bold("Error updating package.json. Please update docker:remote in scripts."));
     }
+}
 
-    const git = spawn("git", ["init"]);
-    git.on("close", code => {
-        console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
-    });
-
-    // exit the process
-    process.exit(0);
-});
 
