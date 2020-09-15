@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
-    "on": "docker-compose up -d",
-    "off": "docker-compose down",
-    "it": "docker exec -it php sh",
-    "rebuild": "docker-compose build"
+    "docker:on": "docker-compose up -d",
+    "docker:off": "docker-compose down",
+    "docker:remote": "docker exec -it <PROJECT_NAME> sh",
+    "docker:rebuild": "docker-compose build"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "docker",
     "base"
   ],
-  "author": "jimmy@jimmyaldape.com",
+  "author": "Jimmy <jimmy@jimmyaldape.com> (https://jimmyaldape.dev)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jimmyaldape/laravel-docker-base/issues"
@@ -28,10 +28,12 @@
   "homepage": "https://github.com/jimmyaldape/laravel-docker-base#readme",
   "dependencies": {
     "boxen": "^4.2.0",
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.0",
+    "replace-in-file": "^6.1.0"
   },
   "engines": {
     "node": ">=12.10.0",
     "npm": ">=6.0.0"
-  }
+  },
+  "private": true
 }
