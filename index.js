@@ -128,16 +128,16 @@ function copyTemplateFiles(){
 }
 
 function updatePlaceholders(...files){
-    files.forEach(file => {
-        try {
-            let changedFile = replace.sync({
-                files: file,
-                from: '<PROJECT_NAME>',
-                to: `${project_name}`
-            });
-        } catch (error) {
-            console.error(chalk.red.bold(`Error updating placeholder on ${file}`));
-        }
-    });
+
+    try {
+        let changedFile = replace.sync({
+            files: files,
+            from: /<PROJECT_NAME>/g,
+            to: `${project_name}`
+        });
+    } catch (error) {
+        console.error(chalk.red.bold(`Error updating project name placeholders`));
+    }
+
     console.log(chalk.blue.bold(`package.json updated.`));
 }
