@@ -23,8 +23,17 @@ To start developing on your machine perform the following steps
 
 First spin up docker and ssh into vm
 ```
-$ npm run on
-$ npm run it
+// Build and start docker containers
+$ npm run docker:on
+
+// Stop and remove docker containers
+$ npm run docker:off
+
+// Remote into the php container to run laravel commands
+$ npm run docker:remote
+
+// Rebuild any container, useful after Dockerfile changes
+$ npm run docker:rebuild
 ```
 Then in ssh'd vm, run
 
