@@ -16,7 +16,7 @@
   },
   "keywords": [
     "laravel",
-    "docker",
+    "docker"
   ],
   "author": "Jimmy <jimmy@jimmyaldape.com> (https://jimmyaldape.dev)",
   "license": "MIT",
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/<ACCOUNT_NAME>/<PROJECT_NAME>#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.2.0"
   },
   "engines": {
     "node": ">=12.10.0",
