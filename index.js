@@ -47,8 +47,8 @@ const questions = [
     {
         type: 'text',
         name: 'mysql_password',
-        message: 'PROJECT_NAME',
-        initial: 'dbpassword'
+        message: 'MYSQL_PASSWORD',
+        initial: 'password'
     },
 ];
 let project_name = '';
@@ -77,6 +77,7 @@ console.log(boxen( chalk.white.bold("Setting up your laravel development environ
             console.log(chalk.blue.bold("Copied .gitignore from templates"));
         });
 
+        updateLaravelEnvFile(response)
         const git = spawn("git", ["init", `../${project_name}`]);
         git.on("close", code => {
             console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
@@ -180,4 +181,35 @@ function updatePlaceholders(...files){
     }
 
     console.log(chalk.blue.bold(`package.json updated.`));
+}
+
+function updateLaravelEnvFile(response){
+
+    try {
+        let changedFile = replace.sync({
+            files: `../${project_name}/src/.env`,
+            from: [
+                'APP_NAME=Laravel',
+                'APP_URL=http://localhost',
+                'DB_HOST=127.0.0.1',
+                'DB_PORT=3306',
+                'DB_DATABASE=laravel',
+                'DB_USERNAME=root',
+                'DB_PASSWORD='
+            ],
+            to: [
+                `APP_NAME=${project_name}`,
+                `APP_URL=http://localhost:${response['http_port']}`,
+                `DB_HOST=mysql`,
+                `DB_PORT=${response['mysql_port']}`,
+                `DB_DATABASE=${response['mysql_database']}`,
+                `DB_USERNAME=${response['mysql_user']}`,
+                `DB_PASSWORD=${response['mysql_password']}`
+            ]
+        });
+    } catch (error) {
+        console.error(chalk.red.bold(`Error updating laravel env`));
+    }
+
+    console.log(chalk.blue.bold(`laravel env updated.`));
 }
