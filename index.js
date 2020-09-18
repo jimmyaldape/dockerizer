@@ -54,29 +54,30 @@ let project_name = '';
 
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
 
-// ask questions
-(async () => {
+(async ()=> {
     const response = await prompts(questions);
     project_name = response['project_name'];
     createProjectDirectory(response);
+
+    // scaffold new laravel application
+    const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
+    // once finished copy and clean files
+    laravel.on("close", code => {
+        fs.copyFileSync('_templates/.gitignore.example',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
+            if(error){
+                throw error;
+            }
+            console.log(chalk.blue.bold("Copied .gitignore from templates"));
+        });
+
+        const git = spawn("git", ["init", `../${project_name}`]);
+        git.on("close", code => {
+            console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
+        });
+    });
 })();
 
-// scaffold new laravel application
-const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
-// once finished copy and clean files
-laravel.on("close", code => {
-    fs.copyFileSync('_templates/.gitignore.example',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
-        if(error){
-            throw error;
-        }
-        console.log(chalk.blue.bold("Copied .gitignore from templates"));
-    });
 
-    const git = spawn("git", ["init", `../${project_name}`]);
-    git.on("close", code => {
-        console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
-    });
-});
 
 function createProjectDirectory(response){
     let directory = `../${response['project_name']}`;
@@ -134,5 +135,3 @@ function updatePackageJson(response){
         console.error(chalk.red.bold("Error updating package.json. Please update docker:remote in scripts."));
     }
 }
-
-
