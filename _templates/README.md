@@ -1,4 +1,4 @@
-# Laravel-Docker-Base
+# <PROJECT_NAME>
 
 A laravel based web application
 

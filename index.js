@@ -121,17 +121,23 @@ function copyTemplateFiles(){
         console.log(chalk.blue.bold("Copied README.md from templates"));
     });
 
+    updatePlaceholders(
+        `../${project_name}/package.json`,
+        `../${project_name}/README.md`,
+        );
 }
 
-function updatePackageJson(response){
-    try {
-        let changedFile = replace.sync({
-            files: 'package.json',
-            from: '<PROJECT_NAME>',
-            to: `${response['project_name']}_php`
-        });
-        console.log(chalk.blue.bold(`package.json updated.`));
-    } catch (error) {
-        console.error(chalk.red.bold("Error updating package.json. Please update docker:remote in scripts."));
-    }
+function updatePlaceholders(...files){
+    files.forEach(file => {
+        try {
+            let changedFile = replace.sync({
+                files: file,
+                from: '<PROJECT_NAME>',
+                to: `${project_name}`
+            });
+        } catch (error) {
+            console.error(chalk.red.bold(`Error updating placeholder on ${file}`));
+        }
+    });
+    console.log(chalk.blue.bold(`package.json updated.`));
 }
