@@ -13,116 +13,113 @@ const boxenOptions = {
     backgroundColor: "#555555"
 };
 const prompts = require('prompts');
+const questions = [
+    {
+        type: 'text',
+        name: 'project_name',
+        message: 'PROJECT_NAME'
+    },
+    {
+        type: 'number',
+        name: 'http_port',
+        message: 'HTTP_PORT',
+        initial: 8000
+    },
+    {
+        type: 'number',
+        name: 'mysql_port',
+        message: 'MYSQL_PORT',
+        initial: 3306
+    },
+    {
+        type: 'text',
+        name: 'mysql_database',
+        message: 'MYSQL_DATABASE',
+        initial: 'laraveldb'
+    },
+    {
+        type: 'text',
+        name: 'mysql_user',
+        message: 'MYSQL_USER',
+        initial: 'dbuser'
+    },
+    {
+        type: 'text',
+        name: 'mysql_password',
+        message: 'PROJECT_NAME',
+        initial: 'dbpassword'
+    },
+];
+let project_name = '';
 
 console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
 
-// delete .git folder
-fs.rmdirSync('.git', { recursive: true }, (error) => {
-    if(error) {
-        throw error;
-    } else {
-        console.log(chalk.blue.bold(`.git folder deleted.`));
-    }
-});
+// ask questions
+(async () => {
+    const response = await prompts(questions);
+    project_name = response['project_name'];
+    createProjectDirectory(response);
+})();
 
 // scaffold new laravel application
-const laravel = spawn("laravel", ["new", "src"]);
-// once finished copy and clean diles
+const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
+// once finished copy and clean files
 laravel.on("close", code => {
-    // copy readme
-    fs.copyFileSync('_templates/README.md','README.md', fs.constants.COPYFILE_FICLONE, (error) => {
+    fs.copyFileSync('_templates/.gitignore.example',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
         if(error){
-            console.error(chalk.red.bold("Error copying README"));
-            return;
-        }
-        console.log(chalk.blue.bold("Copied README.md from templates"));
-    });
-
-    fs.copyFileSync('_templates/.gitignore.example','src/.gitignore', fs.constants.COPYFILE_FICLONE, (error) =>{
-        if(error){
-            console.error(chalk.red.bold("Error copying ignore file"));
-            return;
-        }
-    });
-
-    fs.rmdirSync('_templates', { recursive: true }, (error) => {
-        if(error) {
             throw error;
-        } else {
-            console.log(chalk.blue.bold(`_templates folder deleted.`));
         }
+        console.log(chalk.blue.bold("Copied .gitignore from templates"));
     });
 
+    const git = spawn("git", ["init", `../${project_name}`]);
+    git.on("close", code => {
+        console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
+    });
 });
 
-const git = spawn("git", ["init"]);
-git.on("close", code => {
-    // prompt for env variables
-    const questions = [
-        {
-            type: 'text',
-            name: 'project_name',
-            message: 'PROJECT_NAME'
-        },
-        {
-            type: 'number',
-            name: 'http_port',
-            message: 'HTTP_PORT',
-            initial: 8000
-        },
-        {
-            type: 'number',
-            name: 'mysql_port',
-            message: 'MYSQL_PORT',
-            initial: 3306
-        },
-        {
-            type: 'text',
-            name: 'mysql_database',
-            message: 'MYSQL_DATABASE',
-            initial: 'laraveldb'
-        },
-        {
-            type: 'text',
-            name: 'mysql_user',
-            message: 'MYSQL_USER',
-            initial: 'dbuser'
-        },
-        {
-            type: 'text',
-            name: 'mysql_password',
-            message: 'PROJECT_NAME',
-            initial: 'dbpassword'
-        },
-    ];
+function createProjectDirectory(response){
+    let directory = `../${response['project_name']}`;
+    if(!fs.existsSync(directory)){
+        fs.mkdirSync(directory);
+    }
 
-    (async () => {
-        const response = await prompts(questions);
-        writeEnvToRoot(response);
-    })();
-
-    console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
-});
-
-
+    writeEnvToRoot(response);
+    copyTemplateFiles();
+}
 
 function writeEnvToRoot(response){
+    let file = `../${project_name}/.env`;
     // override env
-    fs.open('.env', 'w', function (err) {
+    fs.open(file, 'w', function (err) {
         if (err) throw err;
     });
 
     const keys = Object.keys(response);
 
     keys.forEach((key, index) => {
-        fs.appendFile('.env', `${key.toUpperCase()}=${response[key]} \n`,(error)=>{
+        fs.appendFile(file, `${key.toUpperCase()}=${response[key]} \n`,(error)=>{
             if(error){
                 throw error;
             }
         });
     });
+}
 
-    updatePackageJson(response);
+function copyTemplateFiles(){
+    fs.copyFileSync('_templates/package.json.example',`../${project_name}/package.json`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied package.json from templates"));
+    });
+    fs.copyFileSync('_templates/README.md',`../${project_name}/README.md`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied README.md from templates"));
+    });
+
 }
 
 function updatePackageJson(response){
