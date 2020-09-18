@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
+const fsx = require("fs-extra");
 const { spawn } = require('child_process');
 const replace = require('replace-in-file');
 const chalk = require("chalk");
@@ -63,7 +64,13 @@ console.log(boxen( chalk.white.bold("Setting up your laravel development environ
     const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
     // once finished copy and clean files
     laravel.on("close", code => {
-        fs.copyFileSync('_templates/.gitignore.example',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
+        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
+            if(error){
+                throw error;
+            }
+            console.log(chalk.blue.bold("Copied .gitignore from templates"));
+        });
+        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
             if(error){
                 throw error;
             }
@@ -87,6 +94,7 @@ function createProjectDirectory(response){
 
     writeEnvToRoot(response);
     copyTemplateFiles();
+    copyTemplateFolders();
 }
 
 function writeEnvToRoot(response){
@@ -108,23 +116,55 @@ function writeEnvToRoot(response){
 }
 
 function copyTemplateFiles(){
-    fs.copyFileSync('_templates/package.json.example',`../${project_name}/package.json`, fs.constants.COPYFILE_FICLONE, (error) => {
+    fs.copyFileSync('_templates/_README.md',`../${project_name}/README.md`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied README.md from templates"));
+    });
+    fs.copyFileSync('_templates/_package.json',`../${project_name}/package.json`, fs.constants.COPYFILE_FICLONE, (error) => {
         if(error){
             throw error;
         }
         console.log(chalk.blue.bold("Copied package.json from templates"));
     });
-    fs.copyFileSync('_templates/README.md',`../${project_name}/README.md`, fs.constants.COPYFILE_FICLONE, (error) => {
+    fs.copyFileSync('_templates/_.npmrc',`../${project_name}/.npmrc`, fs.constants.COPYFILE_FICLONE, (error) => {
         if(error){
             throw error;
         }
-        console.log(chalk.blue.bold("Copied README.md from templates"));
+        console.log(chalk.blue.bold("Copied .npmrc from templates"));
+    });
+    fs.copyFileSync('_templates/_LICENSE',`../${project_name}/LICENSE`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied LICENSE from templates"));
+    });
+    fs.copyFileSync('_templates/_Dockerfile',`../${project_name}/Dockerfile`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied Dockerfile from templates"));
+    });
+    fs.copyFileSync('_templates/_docker-compose.yml',`../${project_name}/docker-compose.yml`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied docker-compose.yml from templates"));
     });
 
     updatePlaceholders(
         `../${project_name}/package.json`,
         `../${project_name}/README.md`,
         );
+}
+
+function copyTemplateFolders(){
+    fsx.copy('_templates/_nginx', `../${project_name}/nginx`, (err) => {
+        if(err){
+            throw err;
+        }
+    })
 }
 
 function updatePlaceholders(...files){

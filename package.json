@@ -5,11 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node .",
-    "docker:on": "docker-compose up -d",
-    "docker:off": "docker-compose down",
-    "docker:remote": "docker exec -it <PROJECT_NAME> sh",
-    "docker:rebuild": "docker-compose build"
+    "start": "node ."
   },
   "repository": {
     "type": "git",
@@ -30,6 +26,7 @@
     "boxen": "^4.2.0",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
+    "fs-extra": "^9.0.1",
     "prompts": "^2.3.2",
     "replace-in-file": "^6.1.0"
   },
