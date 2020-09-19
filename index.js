@@ -192,7 +192,6 @@ function updateLaravelEnvFile(response){
                 'APP_NAME=Laravel',
                 'APP_URL=http://localhost',
                 'DB_HOST=127.0.0.1',
-                'DB_PORT=3306',
                 'DB_DATABASE=laravel',
                 'DB_USERNAME=root',
                 'DB_PASSWORD='
@@ -201,7 +200,6 @@ function updateLaravelEnvFile(response){
                 `APP_NAME=${project_name}`,
                 `APP_URL=http://localhost:${response['http_port']}`,
                 `DB_HOST=mysql`,
-                `DB_PORT=${response['mysql_port']}`,
                 `DB_DATABASE=${response['mysql_database']}`,
                 `DB_USERNAME=${response['mysql_user']}`,
                 `DB_PASSWORD=${response['mysql_password']}`
