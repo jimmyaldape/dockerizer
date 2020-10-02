@@ -34,17 +34,28 @@ RUN apk add --no-cache \
     openssh-client \
     postgresql-libs \
     rsync \
-    zlib-dev
+    zlib-dev \
+    unixodbc-dev
+
+# Microsoft SQL Server Prerequisites
+RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk \
+    && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.6.1.1-1_amd64.apk \
+    && apk add --allow-untrusted msodbcsql17_17.6.1.1-1_amd64.apk \
+    && apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk
 
 # Install PECL and PEAR extensions
 RUN pecl install \
     imagick \
-    xdebug
+    xdebug \
+    sqlsrv \
+    pdo_sqlsrv
 
 # Enable PECL and PEAR extensions
 RUN docker-php-ext-enable \
     imagick \
-    xdebug
+    xdebug \
+    sqlsrv \
+    pdo_sqlsrv
 
 # Configure php extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg

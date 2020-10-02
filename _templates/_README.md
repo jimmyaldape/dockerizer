@@ -23,23 +23,24 @@ To start developing on your machine perform the following steps
 
 First spin up docker and ssh into vm
 ```
-// Build and start docker containers
-$ npm run docker:on
+// Start docker containers
+$ npm run on
 
 // Stop and remove docker containers
-$ npm run docker:off
+$ npm run off
 
-// Remote into the php container to run laravel commands
-$ npm run docker:remote
+// Remote into the php container
+$ npm run remote
 
 // Rebuild any container, useful after Dockerfile changes
-$ npm run docker:rebuild
+$ npm run rebuild
 ```
-Then in ssh'd vm, run
+Then to run laravel or any commands
 
 ```
-$ composer install
-$ npm install
+$ docker-compose exec php composer install
+$ docker-compose exec php npm install
+$ docker-compose exec php php /var/www/artisan
 ```
 
 ## Built With

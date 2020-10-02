@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docker:on": "docker-compose up -d",
-    "docker:off": "docker-compose down",
-    "docker:remote": "docker exec -it <PROJECT_NAME>_php sh",
-    "docker:rebuild": "docker-compose build"
+    "on": "docker-compose up -d",
+    "off": "docker-compose down",
+    "remote": "docker exec -it <PROJECT_NAME>_php sh",
+    "rebuild": "docker-compose build"
   },
   "repository": {
     "type": "git",
