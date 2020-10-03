@@ -19,9 +19,9 @@ docker-machine version 0.16.0, build 9ba6da9
 
 ### To Start Developing
 
-To start developing on your machine perform the following steps
+To start developing on your machine, double check `.env` variables in both root and src folders and start the containers
 
-First spin up docker and ssh into vm
+#### Available Commands
 ```
 // Start docker containers
 $ npm run on
@@ -32,12 +32,22 @@ $ npm run off
 // Remote into the php container
 $ npm run remote
 
-// Rebuild any container, useful after Dockerfile changes
+// Rebuild any Dockerfile container, useful after Dockerfile changes
 $ npm run rebuild
+
+// Run artisan commands on php container
+$ npm run artisan -- make:model -h
+
+// Run composer commands on php container
+$ npm run composer -- -v
 ```
-Then to run laravel or any commands
+
+To run any other commands on any other container
 
 ```
+$ docker-compose exec <container_name> <command> <optional:parameters>
+
+// Examples
 $ docker-compose exec php composer install
 $ docker-compose exec php npm install
 $ docker-compose exec php php /var/www/artisan
