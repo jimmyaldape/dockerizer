@@ -16,6 +16,16 @@ const boxenOptions = {
 const prompts = require('prompts');
 const questions = [
     {
+        type: 'select',
+        name: 'project_type',
+        message: 'Which project framework would you like to use?',
+        choices: [
+            { title: 'Laravel', value: 'laravel' },
+            { title: 'Statamic', value: 'statamic' }
+        ],
+        initial: 1
+    },
+    {
         type: 'text',
         name: 'project_name',
         message: 'PROJECT_NAME'
@@ -53,39 +63,58 @@ const questions = [
 ];
 let project_name = '';
 
-console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
+console.log(boxen( chalk.white.bold("Setting up your development environment ..."), boxenOptions ));
 
 (async ()=> {
     const response = await prompts(questions);
     project_name = response['project_name'];
     createProjectDirectory(response);
 
-    // scaffold new laravel application
-    const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
-    // once finished copy and clean files
-    laravel.on("close", code => {
-        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
-            if(error){
-                throw error;
-            }
-            console.log(chalk.blue.bold("Copied .gitignore from templates"));
-        });
-        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
-            if(error){
-                throw error;
-            }
-            console.log(chalk.blue.bold("Copied .gitignore from templates"));
-        });
+    switch (response['project_type']){
+        case 'laravel':
+            // scaffold new laravel application
+            const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
+            // once finished copy and clean files
+            laravel.on("close", code => {
+                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+                    if (error) {
+                        throw error;
+                    }
+                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
+                });
+                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+                    if (error) {
+                        throw error;
+                    }
+                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
+                });
 
-        updateLaravelEnvFile(response)
-        const git = spawn("git", ["init", `../${project_name}`]);
-        git.on("close", code => {
-            console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
-        });
-    });
+                updateLaravelEnvFile(response)
+                const git = spawn("git", ["init", `../${project_name}`]);
+                git.on("close", code => {
+                    console.log(boxen(chalk.white.bold("Laravel development environment complete."), boxenOptions));
+                });
+            });
+            break;
+        case 'statamic':
+            const statamic = spawn("composer", ["create-project", "--prefer-dist", "statamic/statamic", `../${project_name}/src`]);
+            // once finished copy and clean files
+            statamic.on("close", code => {
+                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+                    if (error) {
+                        throw error;
+                    }
+                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
+                });
+
+                const git = spawn("git", ["init", `../${project_name}`]);
+                git.on("close", code => {
+                    console.log(boxen(chalk.white.bold("Statamic development environment complete."), boxenOptions));
+                });
+            });
+            break;
+    }
 })();
-
-
 
 function createProjectDirectory(response){
     let directory = `../${response['project_name']}`;
