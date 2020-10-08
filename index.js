@@ -16,6 +16,16 @@ const boxenOptions = {
 const prompts = require('prompts');
 const questions = [
     {
+        type: 'select',
+        name: 'project_type',
+        message: 'Which project framework would you like to use?',
+        choices: [
+            { title: 'Laravel', value: 'laravel' },
+            { title: 'Statamic', value: 'statamic' }
+        ],
+        initial: 0
+    },
+    {
         type: 'text',
         name: 'project_name',
         message: 'PROJECT_NAME'
@@ -50,45 +60,51 @@ const questions = [
         message: 'MYSQL_PASSWORD',
         initial: 'password'
     },
+    {
+        type: 'text',
+        name: 'github_username',
+        message: 'What is your github username?'
+    }
 ];
-let project_name = '';
+let project_name, github_username = '';
 
-console.log(boxen( chalk.white.bold("Setting up your laravel development environment ..."), boxenOptions ));
+console.log(boxen( chalk.white.bold("Setting up your development environment ..."), boxenOptions ));
 
 (async ()=> {
     const response = await prompts(questions);
-    project_name = response['project_name'];
+    project_name = response['project_name'].replace(/\s/g,'').toLowerCase();
+    github_username = response['github_username'];
+
     createProjectDirectory(response);
 
-    // scaffold new laravel application
-    const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
-    // once finished copy and clean files
-    laravel.on("close", code => {
-        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
-            if(error){
-                throw error;
-            }
-            console.log(chalk.blue.bold("Copied .gitignore from templates"));
-        });
-        fs.copyFileSync('_templates/_.gitignore',`../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) =>{
-            if(error){
-                throw error;
-            }
-            console.log(chalk.blue.bold("Copied .gitignore from templates"));
-        });
+    let command = '';
+    let parameters = [];
+    switch (response['project_type']){
+        case 'laravel':
+            command = 'laravel';
+            parameters.push(['new', `../${project_name}/src`]);
+            break;
+        case 'statamic':
+            command = 'composer';
+            parameters.push(['create-project', '--prefer-dist', 'statamic/statamic', `../${project_name}/src`]);
+            break;
+    }
 
-        updateLaravelEnvFile(response)
+    // scaffold new application
+    const project = spawn(command, ...parameters);
+    // once finished copy and clean files
+    project.on("close", result => {
+        copyGitIgnore();
+        updateLaravelEnvFile(response);
         const git = spawn("git", ["init", `../${project_name}`]);
         git.on("close", code => {
-            console.log(boxen( chalk.white.bold("Laravel development environment complete."), boxenOptions ));
+            console.log(boxen(chalk.white.bold(`Development environment complete. Please 'cd  ../${project_name}' to get started.`), boxenOptions));
         });
     });
 })();
 
-
-
 function createProjectDirectory(response){
-    let directory = `../${response['project_name']}`;
+    let directory = `../${project_name}`;
     if(!fs.existsSync(directory)){
         fs.mkdirSync(directory);
     }
@@ -113,6 +129,28 @@ function writeEnvToRoot(response){
                 throw error;
             }
         });
+    });
+
+    fs.copyFileSync('_templates/_.env.example',`../${project_name}/.env.example`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied example env from templates"));
+    });
+}
+
+function copyGitIgnore(){
+    fs.copyFileSync('_templates/_.gitignore', `../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if (error) {
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied .gitignore from templates"));
+    });
+    fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if (error) {
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied .gitignore from templates"));
     });
 }
 
@@ -173,8 +211,8 @@ function updatePlaceholders(...files){
     try {
         let changedFile = replace.sync({
             files: files,
-            from: /<PROJECT_NAME>/g,
-            to: `${project_name}`
+            from: [/<PROJECT_NAME>/g, /<GITHUB_USERNAME>/g],
+            to: [`${project_name}`, `${github_username}`]
         });
     } catch (error) {
         console.error(chalk.red.bold(`Error updating project name placeholders`));
