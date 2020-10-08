@@ -1,5 +1,5 @@
-# laravel-docker-base
-A starting point for laravel development using docker
+# dockerizer
+Scaffolds a new project based on Laravel or Statamic and prepares project for development, adding support for Docker.
 
 ### Prerequisites
 * [Node](https://nodejs.org/en/) - Node w/ Package Manager
