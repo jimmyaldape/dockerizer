@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<ACCOUNT_NAME>/<PROJECT_NAME>.git"
+    "url": "git+https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>.git"
   },
   "keywords": [
     "laravel",
@@ -24,9 +24,9 @@
   "author": "Jimmy <jimmy@jimmyaldape.com> (https://jimmyaldape.dev)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/<ACCOUNT_NAME>/<PROJECT_NAME>/issues"
+    "url": "https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>/issues"
   },
-  "homepage": "https://github.com/<ACCOUNT_NAME>/<PROJECT_NAME>#readme",
+  "homepage": "https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>#readme",
   "dependencies": {
     "dotenv": "^8.2.0"
   },

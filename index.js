@@ -60,14 +60,21 @@ const questions = [
         message: 'MYSQL_PASSWORD',
         initial: 'password'
     },
+    {
+        type: 'text',
+        name: 'github_username',
+        message: 'What is your github username?'
+    }
 ];
-let project_name = '';
+let project_name, github_username = '';
 
 console.log(boxen( chalk.white.bold("Setting up your development environment ..."), boxenOptions ));
 
 (async ()=> {
     const response = await prompts(questions);
-    project_name = response['project_name'];
+    project_name = response['project_name'].replace(/\s/g,'').toLowerCase();
+    github_username = response['github_username'];
+
     createProjectDirectory(response);
 
     let command = '';
@@ -91,13 +98,13 @@ console.log(boxen( chalk.white.bold("Setting up your development environment ...
         updateLaravelEnvFile(response);
         const git = spawn("git", ["init", `../${project_name}`]);
         git.on("close", code => {
-            console.log(boxen(chalk.white.bold("Development environment complete."), boxenOptions));
+            console.log(boxen(chalk.white.bold(`Development environment complete. Please 'cd  ../${project_name}' to get started.`), boxenOptions));
         });
     });
 })();
 
 function createProjectDirectory(response){
-    let directory = `../${response['project_name']}`;
+    let directory = `../${project_name}`;
     if(!fs.existsSync(directory)){
         fs.mkdirSync(directory);
     }
@@ -122,6 +129,13 @@ function writeEnvToRoot(response){
                 throw error;
             }
         });
+    });
+
+    fs.copyFileSync('_templates/_.env.example',`../${project_name}/.env.example`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if(error){
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied example env from templates"));
     });
 }
 
@@ -197,8 +211,8 @@ function updatePlaceholders(...files){
     try {
         let changedFile = replace.sync({
             files: files,
-            from: /<PROJECT_NAME>/g,
-            to: `${project_name}`
+            from: [/<PROJECT_NAME>/g, /<GITHUB_USERNAME>/g],
+            to: [`${project_name}`, `${github_username}`]
         });
     } catch (error) {
         console.error(chalk.red.bold(`Error updating project name placeholders`));
