@@ -8,7 +8,10 @@
     "on": "docker-compose up -d",
     "off": "docker-compose down",
     "remote": "docker exec -it <PROJECT_NAME>_php sh",
-    "rebuild": "docker-compose build"
+    "rebuild": "docker-compose build",
+    "artisan": "docker-compose exec php php /var/www/artisan",
+    "composer": "docker-compose exec php composer",
+    "php": "docker-compose exec php php"
   },
   "repository": {
     "type": "git",
