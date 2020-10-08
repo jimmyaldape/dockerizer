@@ -23,7 +23,7 @@ const questions = [
             { title: 'Laravel', value: 'laravel' },
             { title: 'Statamic', value: 'statamic' }
         ],
-        initial: 1
+        initial: 0
     },
     {
         type: 'text',
@@ -70,50 +70,30 @@ console.log(boxen( chalk.white.bold("Setting up your development environment ...
     project_name = response['project_name'];
     createProjectDirectory(response);
 
+    let command = '';
+    let parameters = [];
     switch (response['project_type']){
         case 'laravel':
-            // scaffold new laravel application
-            const laravel = spawn("laravel", ["new", `../${project_name}/src`]);
-            // once finished copy and clean files
-            laravel.on("close", code => {
-                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
-                    if (error) {
-                        throw error;
-                    }
-                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
-                });
-                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
-                    if (error) {
-                        throw error;
-                    }
-                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
-                });
-
-                updateLaravelEnvFile(response)
-                const git = spawn("git", ["init", `../${project_name}`]);
-                git.on("close", code => {
-                    console.log(boxen(chalk.white.bold("Laravel development environment complete."), boxenOptions));
-                });
-            });
+            command = 'laravel';
+            parameters.push(['new', `../${project_name}/src`]);
             break;
         case 'statamic':
-            const statamic = spawn("composer", ["create-project", "--prefer-dist", "statamic/statamic", `../${project_name}/src`]);
-            // once finished copy and clean files
-            statamic.on("close", code => {
-                fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
-                    if (error) {
-                        throw error;
-                    }
-                    console.log(chalk.blue.bold("Copied .gitignore from templates"));
-                });
-
-                const git = spawn("git", ["init", `../${project_name}`]);
-                git.on("close", code => {
-                    console.log(boxen(chalk.white.bold("Statamic development environment complete."), boxenOptions));
-                });
-            });
+            command = 'composer';
+            parameters.push(['create-project', '--prefer-dist', 'statamic/statamic', `../${project_name}/src`]);
             break;
     }
+
+    // scaffold new application
+    const project = spawn(command, ...parameters);
+    // once finished copy and clean files
+    project.on("close", result => {
+        copyGitIgnore();
+        updateLaravelEnvFile(response);
+        const git = spawn("git", ["init", `../${project_name}`]);
+        git.on("close", code => {
+            console.log(boxen(chalk.white.bold("Development environment complete."), boxenOptions));
+        });
+    });
 })();
 
 function createProjectDirectory(response){
@@ -142,6 +122,21 @@ function writeEnvToRoot(response){
                 throw error;
             }
         });
+    });
+}
+
+function copyGitIgnore(){
+    fs.copyFileSync('_templates/_.gitignore', `../${project_name}/src/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if (error) {
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied .gitignore from templates"));
+    });
+    fs.copyFileSync('_templates/_.gitignore', `../${project_name}/.gitignore`, fs.constants.COPYFILE_FICLONE, (error) => {
+        if (error) {
+            throw error;
+        }
+        console.log(chalk.blue.bold("Copied .gitignore from templates"));
     });
 }
 
