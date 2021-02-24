@@ -1,32 +1,42 @@
 {
-  "name": "<PROJECT_NAME>",
+  "name": "{PROJECT_NAME}",
   "version": "0.0.1",
-  "description": "Your new project",
+  "description": "{PROJECT_DESCRIPTION}",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "on": "docker-compose up -d",
+    "build": "docker-compose up -d --build",
     "off": "docker-compose down",
-    "remote": "docker exec -it <PROJECT_NAME>_php sh",
-    "rebuild": "docker-compose build",
-    "artisan": "docker-compose exec php php /var/www/artisan",
-    "composer": "docker-compose exec php composer",
-    "php": "docker-compose exec php php"
+    "remote": "docker exec -it {PROJECT_NAME}_php sh",
+    "artisan": "docker-compose run --rm artisan",
+    "composer": "docker-compose run --rm composer",
+    "npm": "docker-compose run --rm npm",
+    "npx": "docker-compose run --rm npx",
+    "tinker": "docker-compose run --rm artisan tinker",
+    "watch": "docker-compose run -d --rm npm run watch",
+    "dep-stage": "dep deploy staging -vvv -o branch=develop --log deployer-staging.log",
+    "dep-stage-down": "dep maintenance:down staging",
+    "dep-stage-up": "dep maintenance:up staging",
+    "dep-prod": "dep deploy production -vvv -o branch=master --log deploy-production.log",
+    "dep-prod-down": "dep maintenance:down production -vvv",
+    "dep-prod-up": "dep maintenance:up production",
+    "dep-prod-rollback": "dep rollback production"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>.git"
+    "url": "git+https://github.com/{GITHUB_USERNAME}/{PROJECT_NAME}.git"
   },
   "keywords": [
     "laravel",
     "docker"
   ],
-  "author": "Jimmy <jimmy@jimmyaldape.com> (https://jimmyaldape.dev)",
+  "author": "{AUTHOR_NAME} <{AUTHOR_EMAIL}> ({AUTHOR_WEBSITE})",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>/issues"
+    "url": "https://github.com/{GITHUB_USERNAME}/{PROJECT_NAME}/issues"
   },
-  "homepage": "https://github.com/<GITHUB_USERNAME>/<PROJECT_NAME>#readme",
+  "homepage": "https://github.com/{GITHUB_USERNAME}/{PROJECT_NAME}#readme",
   "dependencies": {
     "dotenv": "^8.2.0"
   },

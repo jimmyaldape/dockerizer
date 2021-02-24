@@ -1,6 +1,6 @@
-# <PROJECT_NAME>
+# {PROJECT_NAME}
 
-A laravel based web application
+{PROJECT_DESCRIPTION}
 
 ### Prerequisites
 
@@ -66,7 +66,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Jimmy Aldape** - [https://jimmyaldape.dev](https://jimmyaldape.dev)
+* **{AUTHOR_NAME}** - [{AUTHOR_WEBSITE}]({AUTHOR_WEBSITE})
 
 ## License
 
